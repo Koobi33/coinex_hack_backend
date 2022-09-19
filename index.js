@@ -1,15 +1,32 @@
 const express = require('express');
+const {connectDataBase, User} = require('./db-connect');
+const { PORT, HOST } = require('./constants');
 
-// Constants
-const PORT = 8080;
-const HOST = '0.0.0.0';
 
 // App
 const app = express();
 
-app.get('/', (req, res) => {
-    res.send('Hello BLOCKCHAIN World');
+
+// DataBase
+connectDataBase().then(() => {
+    console.log("CONNECTED");
+    console.log('User db created | synced');
 });
+
+
+// methods
+app.get('/', async (req, res) => {
+    const allUsers = await User.findAll()
+    res.send(`All users: ${JSON.stringify(allUsers)}`);
+});
+
+app.get('/create', async (req, res) => {
+    const name = `User name #${Math.random()}`
+    await User.create({ firstName: name, lastName: name })
+    res.send(`User ${name} has been created`);
+});
+
+
 
 app.listen(PORT, HOST);
 console.log(`Running on http://${HOST}:${PORT}`);
