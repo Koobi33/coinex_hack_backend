@@ -7,6 +7,8 @@ services:
     restart: unless-stopped
     depends_on:
       - db
+    links:
+      - db
     volumes:
       - ./:/usr/src/app/
       - /usr/src/app/node_modules
@@ -21,4 +23,6 @@ services:
     ports:
         - $POSTGRES_LOCAL_PORT:$POSTGRES_DOCKER_PORT
     volumes:
-        - /var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/data
+volumes:
+  pgdata:
