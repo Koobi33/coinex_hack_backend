@@ -1,10 +1,18 @@
 const express = require('express');
-const {connectDataBase, User} = require('./db-connect');
+const bodyParser = require("body-parser");
+
+const { connectDataBase } = require('./db-connect');
 const { PORT, HOST } = require('./constants');
+const router = require('./routes/index');
 
 
 // App
 const app = express();
+
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
+app.use('/api', router);
 
 
 // DataBase
@@ -14,17 +22,6 @@ connectDataBase().then(() => {
 });
 
 
-// methods
-app.get('/', async (req, res) => {
-    const allUsers = await User.findAll()
-    res.send(`All users: ${JSON.stringify(allUsers)}`);
-});
-
-app.get('/create', async (req, res) => {
-    const name = `User name #${Math.random()}`
-    await User.create({ firstName: name, lastName: name })
-    res.send(`User ${name} has been created`);
-});
 
 
 
