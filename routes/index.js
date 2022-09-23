@@ -3,9 +3,17 @@ const UserController = require('../controllers/user-controller');
 
 const router = new Router();
 
-router.get('/', UserController.getAllUsers);
+//get all users
+router.get('/users', UserController.getAllUsers);
 
-router.get('/create', UserController.createUser);
+//get specific user by id
+router.get('/users/{id}', UserController.getAllUsers);
+
+router.post('/users', UserController.createUser);
+
+router.put('/users', UserController.createUser);
+
+router.delete('/users', UserController.createUser);
 
 // router.post('/test', async (req, res) => {
 //
@@ -14,6 +22,5 @@ router.get('/create', UserController.createUser);
 //     res.status(200);
 //     res.send(`${JSON.stringify(req.body)}`);
 // })
-
 
 module.exports = router;
