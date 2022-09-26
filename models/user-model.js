@@ -1,21 +1,18 @@
-// const { DataTypes } = require("sequelize");
-// const { sequelize } = require('../db-connect');
-//
-// const User = sequelize.define(
-//     'User',
-//     {
-//         firstName: {
-//             type: DataTypes.STRING,
-//             allowNull: false,
-//         },
-//         lastName: {
-//             type: DataTypes.STRING,
-//
-//         },
-//     }
-// )
-//
-// User.sync();
-//
-//
-// module.exports = User;
+const { DataTypes } = require("sequelize");
+
+module.exports = (sequelize) => {
+    const User = sequelize.define("User", {
+            firstName: {
+                type: DataTypes.STRING,
+            },
+            lastName: {
+                type: DataTypes.STRING,
+            },
+        },
+        {
+            timestamps: true,
+        });
+    return User;
+};
+
+

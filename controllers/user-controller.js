@@ -7,13 +7,28 @@ class UserController {
 
         res.send(`All users: ${JSON.stringify(allUsers)}`);
     }
+    async getUserById(req, res, next) {
+        const userId = req.params.id;
+        const myUser = await UserService.getUserById(userId);
+        if (!myUser) {
+            res.send(`User with id ${userId} not found`);
+        }
+        res.json(myUser);
+    }
 
     async createUser(req, res, next) {
 
-        const name = `User name #${Math.random()}`
+        const { firstName, lastName } = req.body;
 
-        await UserService.createUser(name);
-        res.send(`User ${name} has been created`);
+        if (
+            firstName.length > 0 && typeof firstName === 'string' &&
+            lastName.length > 0 && typeof lastName === 'string'
+        ) {
+            const newUserRaw = await UserService.createUser({firstName, lastName});
+            const newUser = newUserRaw.toJSON();
+            return res.send(`User ${newUser.firstName} ${newUser.lastName} with id: ${newUser.id} has been created`);
+        }
+        return res.send('User creation error');
     }
 }
 

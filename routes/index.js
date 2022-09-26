@@ -7,7 +7,7 @@ const router = new Router();
 router.get('/users', UserController.getAllUsers);
 
 //get specific user by id
-router.get('/users/{id}', UserController.getAllUsers);
+router.get('/users/:id', UserController.getUserById);
 
 router.post('/users', UserController.createUser);
 
