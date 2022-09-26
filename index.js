@@ -5,7 +5,6 @@ const { connectDataBase } = require('./db-connect');
 const { PORT, HOST } = require('./constants');
 const router = require('./routes/index');
 
-
 // App
 const app = express();
 
@@ -20,10 +19,6 @@ connectDataBase().then(() => {
     console.log("CONNECTED");
     console.log('User db created | synced');
 });
-
-
-
-
 
 app.listen(PORT, HOST);
 console.log(`Running on http://${HOST}:${PORT}`);
