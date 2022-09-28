@@ -8,8 +8,14 @@ class UserService {
     async getAllUsers() {
         return await User.findAll()
     }
-    async getUserById(userId) {
-        return await User.findOne({ where: { id: userId }});
+    async getUserByWallet(wallet) {
+        return await User
+            .findOrCreate({
+                where: { wallet },
+                defaults: {
+                    nonce: Math.floor(Math.random() * 1000000)
+                }
+        });
     }
 }
 
