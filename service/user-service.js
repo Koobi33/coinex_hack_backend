@@ -2,20 +2,18 @@ const { sequelize } = require("../db-connect");
 const User = require('../models/user-model')(sequelize);
 
 class UserService {
-    async createUser({firstName, lastName}) {
-       return await User.create({ firstName, lastName });
+    async createUser({ wallet }) {
+       return await User
+           .create({
+               wallet,
+               nonce: Math.floor(Math.random() * 1000000)
+           });
     }
     async getAllUsers() {
         return await User.findAll()
     }
     async getUserByWallet(wallet) {
-        return await User
-            .findOrCreate({
-                where: { wallet },
-                defaults: {
-                    nonce: Math.floor(Math.random() * 1000000)
-                }
-        });
+        return await User.findOne({ where: { wallet }});
     }
 }
 
