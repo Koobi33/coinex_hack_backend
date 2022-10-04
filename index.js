@@ -27,6 +27,8 @@ app.use(
 app.use("/api", router);
 app.use("/auth", authRouter);
 
+//TODO: auth middleware
+
 // DataBase
 connectDataBase().then(() => {
   User.sync().then(() => {

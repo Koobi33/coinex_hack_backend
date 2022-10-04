@@ -1,5 +1,7 @@
 const UserService = require("../service/user-service");
 const { web3 } = require("../web3-connect");
+const { generateNonce } = require("../utils");
+const jwt = require("jsonwebtoken");
 
 class AuthController {
   async getNonce(req, res, next) {
@@ -27,20 +29,21 @@ class AuthController {
         // Check if address matches
         if (signingAddress.toLowerCase() === walletAddress.toLowerCase()) {
           // Change user nonce
-          // user.nonce = Math.floor(Math.random() * 1000000);
-          // user.save((err) => {
-          //   if (err) {
-          //     res.send(err);
-          //   }
-          // });
+          await UserService.updateUser({
+            wallet: walletAddress,
+            nonce: generateNonce(),
+          });
           // // Set jwt token
-          // const token = jwt.sign({
-          //   _id: user._id,
-          //   address: user.address
-          // }, process.env.JWT_SECRET, {expiresIn: '6h'});
+          const token = await jwt.sign(
+            {
+              wallet: user.wallet,
+            },
+            process.env.JWT_PRIVATE_KEY,
+            { expiresIn: "6h" }
+          );
           res.status(200).json({
             success: true,
-            token: `Bearer ${null}`,
+            token: `Bearer ${token}`,
             user,
             msg: "You are now logged in.",
           });
