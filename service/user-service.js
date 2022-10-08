@@ -1,12 +1,10 @@
 const { sequelize } = require("../db-connect");
-const { generateNonce } = require("../utils");
 const User = require("../models/user-model")(sequelize);
 
 class UserService {
   async createUser({ wallet }) {
     return await User.create({
       wallet,
-      nonce: generateNonce(),
     });
   }
   async getAllUsers() {
@@ -15,15 +13,23 @@ class UserService {
   async getUserByWallet(wallet) {
     return await User.findOne({ where: { wallet } });
   }
-  async updateUser({ wallet, nonce, firstName = null, lastName = null }) {
+  async updateUser({ wallet, nonce, startedCourses, level }) {
     const user = await this.getUserByWallet(wallet);
     if (user) {
-      user.set({
-        nonce,
-        // firstName,
-        // lastName,
-      });
-      await user.save();
+      if (nonce) {
+        user.nonce = nonce;
+        await user.save();
+      }
+
+      if (startedCourses) {
+        user.startedCourses = startedCourses;
+        await user.save();
+      }
+
+      if (level && typeof level === "number") {
+        user.level = level;
+        await user.save();
+      }
     }
     return user;
   }

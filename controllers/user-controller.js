@@ -1,35 +1,77 @@
-const UserService = require('../service/user-service');
+const UserService = require("../service/user-service");
+const CourseService = require("../service/course-service");
+const ContractService = require("../service/contract-service");
+const { COURSE_STATUSES } = require("../constants");
 
 class UserController {
-    async getAllUsers(req, res, next) {
+  async getAllUsers(req, res, next) {
+    const allUsers = await UserService.getAllUsers();
 
-        const allUsers = await UserService.getAllUsers();
-
-        res.send(`All users: ${JSON.stringify(allUsers)}`);
+    res.send(`All users: ${JSON.stringify(allUsers)}`);
+  }
+  async getUserById(req, res, next) {
+    const userId = req.params.id;
+    const myUser = await UserService.getUserByWallet(userId);
+    if (!myUser) {
+      res.send(`User with id ${userId} not found`);
     }
-    async getUserById(req, res, next) {
-        const userId = req.params.id;
-        const myUser = await UserService.getUserById(userId);
-        if (!myUser) {
-            res.send(`User with id ${userId} not found`);
-        }
-        res.json(myUser);
+    res.json(myUser);
+  }
+  async registerUserOnCourse(req, res, next) {
+    const userId = req.params.id;
+    const courseID = req.params.courseID;
+    let user = await UserService.getUserByWallet(userId);
+    const course = await CourseService.getCourseById(courseID);
+
+    if (user && course) {
+      const startedCourses = JSON.parse(user.startedCourses);
+      user = await UserService.updateUser({
+        wallet: userId,
+        startedCourses: {
+          ...startedCourses,
+          [courseID]: {
+            currentLesson: course.lessons[0].id,
+            status: "IN_PROGRESS",
+            evaluationsCompleted: 0,
+          },
+        },
+      });
     }
-
-    async createUser(req, res, next) {
-
-        const { firstName, lastName } = req.body;
-
-        if (
-            firstName.length > 0 && typeof firstName === 'string' &&
-            lastName.length > 0 && typeof lastName === 'string'
-        ) {
-            const newUserRaw = await UserService.createUser({firstName, lastName});
-            const newUser = newUserRaw.toJSON();
-            return res.send(`User ${newUser.firstName} ${newUser.lastName} with id: ${newUser.id} has been created`);
-        }
-        return res.send('User creation error');
+    return res.json(user);
+  }
+  async updateUserStatusOnCourse(req, res, next) {
+    // отправляем id урока +1
+    const userId = req.params.id;
+    const courseID = req.params.courseID;
+    const lessonID = req.params.lessonID;
+    let user = await UserService.getUserByWallet(userId);
+    const course = await CourseService.getCourseById(courseID);
+    const isFinished =
+      lessonID >= course.lessons[course.lessons.length - 1].id + 1;
+    const startedCourses = user.startedCourses;
+    if (user && course && startedCourses[courseID]) {
+      if (course.lessons[startedCourses[courseID].currentLesson]) {
+        await ContractService.grantUser(
+          userId,
+          course.lessons[startedCourses[courseID].currentLesson].reward
+        );
+      }
+      user = await UserService.updateUser({
+        wallet: userId,
+        startedCourses: {
+          ...startedCourses,
+          [courseID]: {
+            ...startedCourses[courseID],
+            status: isFinished
+              ? COURSE_STATUSES.EVALUATION
+              : COURSE_STATUSES.IN_PROGRESS,
+            currentLesson: lessonID,
+          },
+        },
+      });
+      return res.json(user);
     }
+  }
 }
 
 module.exports = new UserController();

@@ -7,7 +7,7 @@ class AuthController {
   async getNonce(req, res, next) {
     const walletAddress = req.params.wallet;
     if (walletAddress) {
-      let user = null;
+      let user;
       user = await UserService.getUserByWallet(walletAddress);
       if (!user) {
         user = await UserService.createUser({ wallet: walletAddress });
