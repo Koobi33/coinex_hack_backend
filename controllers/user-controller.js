@@ -58,6 +58,7 @@ class UserController {
       }
       user = await UserService.updateUser({
         wallet: userId,
+        level: user.level + 0.55,
         startedCourses: {
           ...startedCourses,
           [courseID]: {

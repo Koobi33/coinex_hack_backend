@@ -6,7 +6,6 @@ const { connectDataBase, sequelize } = require("./db-connect");
 const { PORT, HOST } = require("./constants");
 const router = require("./routes/index");
 const authRouter = require("./routes/auth");
-const tokenRouter = require("./routes/token");
 
 // App
 const app = express();
@@ -25,7 +24,6 @@ app.use(
 
 app.use("/api", router);
 app.use("/auth", authRouter);
-// app.use("/token", tokenRouter);
 
 // DataBase
 connectDataBase().then(() => {
