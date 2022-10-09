@@ -10,16 +10,20 @@ class CourseController {
   }
   async getEvaluatableCourses(req, res, next) {
     const allUsers = await UserService.getAllUsers();
-    const availableCourses = allUsers.filter((user) => {
-      const userCoursesList = user.startedCourses.filter(
-        (userCourse) => userCourse.status === COURSE_STATUSES.EVALUATION
+    const availableCourses = allUsers.map((user) => {
+      const startedCourses =
+        typeof user.startedCourses === "string" || !user.startedCourses
+          ? []
+          : Object.entries(user.startedCourses);
+      const userCoursesList = startedCourses.filter(
+        (userCourse) => userCourse[1].status === COURSE_STATUSES.EVALUATION
       );
       return userCoursesList.map((item) => ({
         user: user.wallet,
         course: item,
       }));
     });
-    return res.json(availableCourses);
+    return res.json(availableCourses.flat(1));
   }
   async evaluateCourse(req, res, next) {
     const evaluatorID = req.params.evaluatorID;
