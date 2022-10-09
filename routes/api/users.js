@@ -18,4 +18,7 @@ router.post("/:id/:courseID/registration", UserController.registerUserOnCourse);
 // update course progress
 router.put("/:id/:courseID/:lessonID", UserController.updateUserStatusOnCourse);
 
+// submit exam
+router.post("/:id/:courseID/submit", UserController.submitExam);
+
 module.exports = router;

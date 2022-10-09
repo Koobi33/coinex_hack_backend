@@ -73,6 +73,31 @@ class UserController {
       return res.json(user);
     }
   }
+  async submitExam(req, res, next) {
+    const submission = req.body.submission;
+    const userId = req.params.id;
+    const courseID = req.params.courseID;
+    let user = await UserService.getUserByWallet(userId);
+    const course = await CourseService.getCourseById(courseID);
+    const startedCourses = user.startedCourses;
+    if (
+      user &&
+      course &&
+      startedCourses[courseID] &&
+      startedCourses[courseID].status === COURSE_STATUSES.EVALUATION
+    ) {
+      user = await UserService.updateUser({
+        wallet: userId,
+        startedCourses: {
+          ...startedCourses,
+          [courseID]: {
+            submission,
+          },
+        },
+      });
+    }
+    return res.json(user);
+  }
 }
 
 module.exports = new UserController();

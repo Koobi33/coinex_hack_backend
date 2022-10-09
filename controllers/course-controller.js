@@ -16,7 +16,7 @@ class CourseController {
       );
       return userCoursesList.map((item) => ({
         user: user.wallet,
-        course: item.id,
+        course: item,
       }));
     });
     return res.json(availableCourses);
