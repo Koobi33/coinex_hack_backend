@@ -24,7 +24,10 @@ class UserController {
     const course = await CourseService.getCourseById(courseID);
 
     if (user && course) {
-      const startedCourses = JSON.parse(user.startedCourses);
+      let startedCourses =
+        typeof user.startedCourses === "string"
+          ? JSON.parse(user.startedCourses)
+          : user.startedCourses;
       user = await UserService.updateUser({
         wallet: userId,
         startedCourses: {
@@ -91,6 +94,7 @@ class UserController {
         startedCourses: {
           ...startedCourses,
           [courseID]: {
+            ...startedCourses[courseID],
             submission,
           },
         },
