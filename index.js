@@ -1,3 +1,10 @@
+const fs = require("fs");
+const https = require("https");
+const privateKey = fs.readFileSync("./certs/private.key", "utf8");
+const certificate = fs.readFileSync("./certs/certificate.crt", "utf8");
+
+const credentials = { key: privateKey, cert: certificate };
+
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
@@ -39,5 +46,6 @@ connectDataBase().then(() => {
   console.log("CONNECTED");
 });
 
-app.listen(PORT, HOST);
+const httpsServer = https.createServer(credentials, app);
+httpsServer.listen(PORT);
 console.log(`Running on http://${HOST}:${PORT}`);
